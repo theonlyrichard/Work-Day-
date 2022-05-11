@@ -1,25 +1,81 @@
-//Display Day of Week and Current Date
-var todaysDate = moment();
-$("#currentDay").text(todaysDate.format("dddd, MMMM Do, YYYY"));
-console.log(currentDay);
+$(document).ready(function () {
+
+    // Adding current date to the jumbotron.
+    $("#currentDay").text(moment().format("MMMM Do YYYY"));
+    //current time
+    new Date($.now());
 
 
-var auditTasks = function () {
 
-    //Get current hour
-    var currentHour = moment().hour();
-    $(".task-info").each(function () {
-        var elementHour = parseInt($(this).attr("id"));
 
-        //Check for past, present, future
-        if (elementHour < currentHour) {
-            $(this).removeClass(["present", "future"]).addClass("past");
+    let description = $(".description");
+    let saveButton = $(".saveBtn");
+    let currentHour = moment().hour();
+
+    console.log(currentHour);
+    console.log(typeof currentHour);
+
+    //color blocks for past or present
+    description.each(function () {
+        let timeBlock = parseInt($(this).attr("id"));
+
+        if (timeBlock === currentHour) {
+            $(this).addClass("present");
+            $(this).removeClass("future");
+            $(this).removeClass("past");
         }
-        else if (elementHour === currentHour) {
-            $(this).removeClass(["past", "future"]).addClass("present");
+        else if (timeBlock < currentHour) {
+            $(this).addClass("past");
+            $(this).removeClass("future");
+            $(this).removeClass("present");
         }
         else {
-            $(this).removeClass(["past", "present"]).addClass("future");
+            $(this).addClass("future");
+            $(this).removeClass("past");
+            $(this).removeClass("present");
         }
-    })
-};
+    });
+
+
+    description.each(function () {
+
+        for (let i = 0; i < localStorage.length; i++) {
+            let objectKey = localStorage.key(i);
+            let taskValue = localStorage.getItem(objectKey);
+            let rowHour = $(this).siblings(".hour").text();
+
+            console.log(rowHour);
+            console.log(typeof rowHour);
+            console.log(objectKey);
+            console.log(typeof objectKey);
+            console.log(taskValue);
+            console.log(typeof taskValue);
+
+            if (objectKey === rowHour) {
+                $(this).val(taskValue);
+            }
+
+        }
+    });
+
+    // save task input once saved 
+    function saveTasks() {
+        let currentTime = $(this).data("hour");
+        let rowHour = $(this).siblings(".hour").text();
+        let task = $(this).siblings(".description").val();
+
+        console.log(currentTime);
+        console.log(rowHour);
+        console.log(task);
+
+        if (task === "") {
+            localStorage.setItem(rowHour, "");
+        }
+        else {
+            localStorage.setItem(rowHour, task);
+        }
+    }
+
+    saveButton.on("click", saveTasks);
+
+});
